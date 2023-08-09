@@ -48,3 +48,12 @@ death_table <- chd |>
 
 death_table
 ```
+
+## Plotting
+
+```{r}
+chd |> 
+  ggplot(aes(age))  +
+  geom_histogram() +
+  theme_light()
+```
