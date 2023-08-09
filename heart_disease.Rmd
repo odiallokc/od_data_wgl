@@ -22,7 +22,7 @@ Data source [Davide Chicco](https://github.com/davidechicco/cardiovascular_heart
 ## Loading libraries and data sets
 
 ```{r}
-pacman::p_load(tidyverse, janitor, scales, knitr, kableExtra)
+pacman::p_load(tidyverse, janitor, scales, knitr, kableExtra, psych)
 ```
 
 ```{r message=FALSE, warning=FALSE}
@@ -47,4 +47,32 @@ death_table <- chd |>
   rename_with(toupper)
 
 death_table
+```
+
+```{r}
+chd |> 
+  select(death_event, where(is.double),  where(is.integer)) |> 
+  group_by(death_event) |> 
+  summarise(
+    across(age, 
+           .fns = list(min = min, mean = mean, max = max), 
+           .names = "{.fn}_{.col}"))
+```
+
+```{r}
+chd |> 
+  select(death_event, !where(is.factor)) |> 
+  group_by(death_event) |> 
+  summarise(
+    across(platelets, 
+           .fns = list(min = min, mean = mean, max = max, sd = sd)))
+```
+
+## Plotting
+
+```{r}
+chd |> 
+  ggplot(aes(age))  +
+  geom_histogram() +
+  theme_light()
 ```
