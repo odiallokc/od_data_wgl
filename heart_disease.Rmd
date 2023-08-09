@@ -1,0 +1,50 @@
+---
+title: "Heart Cardiovascular Disease"
+output:
+  html_document:
+    toc: yes
+    toc_depth: '4'
+    df_print: paged
+  html_notebook:
+    toc: yes
+    toc_depth: 4
+editor_options:
+  chunk_output_type: console
+---
+
+Data source [Davide Chicco](https://github.com/davidechicco/cardiovascular_heart_disease)
+
+-   **Run code:** *Run* button or *Ctrl+Shift+Enter*
+-   **New chunk:** *Insert Chunk* button or *Ctrl+Alt+I*
+-   **Knitting:** *Knit*, run R code chunks
+-   **Preview:** shows a rendered HTML copy of the contents of the editor. (Doesn't run R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed).
+
+## Loading libraries and data sets
+
+```{r}
+pacman::p_load(tidyverse, janitor, scales, knitr, kableExtra)
+```
+
+```{r message=FALSE, warning=FALSE}
+chd <- read_csv('data/dataset_edited.csv',
+                col_types = "fffffiddddddf",
+                show_col_types = FALSE)
+chd |> head()
+```
+
+## EDA
+
+```{r}
+death_table <- chd |> 
+  select(where(is.factor)) |> 
+  pivot_longer(-death_event, 
+               names_to = 'feature', values_to = 'values') |> 
+  mutate(values = as.integer(values)) |> 
+  group_by(death_event, feature) |> 
+  summarise(count = sum(values), .groups = 'drop') |> 
+  pivot_wider(names_from = feature, values_from = count) |> 
+  rename(death = death_event, `high BP` = high_blood_pressure) |> 
+  rename_with(toupper)
+
+death_table
+```
